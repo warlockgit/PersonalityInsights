@@ -4,20 +4,21 @@ const ejs = require('ejs');
 const path = require('path');
 const bodyParser = require('body-parser');
 
-
+//Contiene SDK con la cual se va a llevar acabo al ejecución
 var PersonalityInsightsV3 = require('watson-developer-cloud/personality-insights/v3');
 var fs = require('fs');
+//Archivo con datos de clasificacion
 var Estructurador = require('./Estructurador');
 
 //set IBM cloud credentials in this section
 var personalityInsights = new PersonalityInsightsV3({
   version_date: '2017-10-13',
-  username: '',
-  password: ''
+  username: 'apikey',
+  password: 'IGNUgnmryem1Ie8A8onqv-uvbw9BMebcPxKxJZXJZ_2Y'
 });
 
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
-// Init app
+// Init app para el back de la aplicacion
 const app = express();
 
 // EJS
@@ -39,6 +40,7 @@ app.post('/upload', urlencodedParser ,(req, res) => {
   // console.log(JSON.stringify(req.body));
   // console.log(typeof JSON.stringify(typeof req.body));
 
+  //Variable con informacion de contenido
 var cont = JSON.stringify(req.body.p1 + req.body.p2 + req.body.p3 + req.body.p4 + req.body.p5);
 
 
@@ -49,11 +51,12 @@ console.log(cont);
 
     content: cont,
     content_type: 'text/plain',
-    consumption_preferences: true,
+    consumption_preferences: true, //QUe traiga variables de consumo
     content_language: 'es',
     accept_language: 'es',
     raw_scores: true
   };
+                                            //Callback function
   personalityInsights.profile(profileParams, function(error, profile) {
   if (error) {
     console.log(error);
@@ -70,6 +73,8 @@ console.log(cont);
     var imaginP = JSON.stringify(x.personality[0].children[3].percentile, null, 2);
     var intelec = JSON.stringify(x.personality[0].children[4].name, null, 2);
     var intelecP = JSON.stringify(x.personality[0].children[4].percentile, null, 2);
+    
+    //Limpiar el output para qye sea visiblemente entendible
     var y=Estructurador.cleansing(x);
     console.log(y);
 
